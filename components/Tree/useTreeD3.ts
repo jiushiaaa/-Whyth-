@@ -196,9 +196,5 @@ export function useTreeD3({ root, selectedNodeId, onNodeClick }: UseTreeD3Option
     return () => window.removeEventListener('resize', handleResize)
   }, [render])
 
-  useEffect(() => {
-    render()
-  }, [root, selectedNodeId, render])
-
   return { svgRef }
 }

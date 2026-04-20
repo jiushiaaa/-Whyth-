@@ -21,12 +21,23 @@ export function TreeCanvas() {
   const handleNodeClick = useCallback(async (node: TreeNode) => {
     selectNode(node.id)
 
-    if (node.status === 'unexplored') {
+    const currentStatus = useTreeStore.getState().root
+      ? (() => {
+          const findNode = (n: TreeNode, id: string): TreeNode | null => {
+            if (n.id === id) return n
+            for (const c of n.children) { const f = findNode(c, id); if (f) return f }
+            return null
+          }
+          return findNode(useTreeStore.getState().root!, node.id)?.status
+        })()
+      : undefined
+    if (currentStatus === 'unexplored') {
       useTreeStore.getState().setNodeStatus(node.id, 'selected')
       setLoading(true)
 
       try {
-        const parent = root ? findParent(root, node.id) : null
+        const currentRoot = useTreeStore.getState().root
+        const parent = currentRoot ? findParent(currentRoot, node.id) : null
         const res = await fetch('/api/expand', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -46,13 +57,15 @@ export function TreeCanvas() {
         setLoading(false)
       }
     }
-  }, [root, selectNode, expandNode, userInput, setLoading])
+  }, [selectNode, expandNode, userInput, setLoading])
 
   const { svgRef } = useTreeD3({
     root: root!,
     selectedNodeId,
     onNodeClick: handleNodeClick,
   })
+
+  if (!root) return null
 
   return (
     <motion.div
