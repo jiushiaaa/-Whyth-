@@ -1,36 +1,217 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Whyth — 反向思维树引擎
 
-## Getting Started
+> 你有答案，但你找到问题了吗？
 
-First, run the development server:
+Whyth（Why + Truth）是一个 AI 驱动的反向思维工具。用户输入一个结论、感受或困惑，系统自动生成一棵可交互的问题树，帮助用户从答案倒推出真正的问题所在。
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+**在线体验：** [whyth.vercel.app](https://whyth.vercel.app)
+
+---
+
+## 为什么要做这个产品？
+
+### 痛点
+
+人们在日常生活中经常陷入一种困境：**有了答案，却不知道真正的问题是什么。**
+
+- 「我最近感觉很空」——但空虚的根源是什么？
+- 「我总是在最后一刻放弃」——为什么在临门一脚时退缩？
+- 「为什么越努力越焦虑」——焦虑的底层逻辑是什么？
+
+人类的思维习惯是「从问题到答案」，但很多时候我们拿到的是一个模糊的感受或结论，真正需要的是**反向拆解**——从答案倒推回问题。这个过程需要持续追问「为什么」，但大多数人缺乏结构化自我追问的能力和耐心。
+
+### 设计动机
+
+Whyth 的核心设计理念来自两个观察：
+
+1. **苏格拉底式追问是有效的，但难以独自完成。** 持续对自己追问「为什么」需要客观性和系统性，AI 可以充当这个「追问者」的角色。
+2. **思维过程应该是可视化的。** 文字列表无法呈现思维的层级关系和分支结构，树形图是表达「从表象到根因」最自然的视觉隐喻。
+
+---
+
+## 用户画像
+
+| 维度 | 描述 |
+|------|------|
+| 年龄 | 18-35 岁 |
+| 特征 | 有自我觉察意识，习惯反思但缺乏工具辅助 |
+| 典型场景 | 情绪低落时想理清思路、面临重大决策时想看清本质、学习/工作中遇到困惑想深度拆解 |
+| 技术素养 | 熟悉互联网产品，愿意尝试新工具 |
+
+**三类核心用户：**
+
+- **情绪探索者** — 感受到某种情绪但不清楚根源，需要引导式自我追问
+- **决策分析者** — 面临选择困难或行为模式困惑，需要看清深层动因
+- **知识拆解者** — 对某个现象/概念感到困惑，需要系统性拆解理解
+
+---
+
+## 产品解决了什么问题？
+
+### 使用场景
+
+| 场景 | 用户状态 | Whyth 的作用 |
+|------|----------|-------------|
+| 深夜情绪低落 | 「我感觉很空」，但说不清为什么 | 生成问题树，引导用户从「空虚感」追溯到具体的缺失（社交/意义/掌控感） |
+| 职业决策焦虑 | 「我总是在最后一刻放弃」 | 拆解出恐惧失败、完美主义、自我怀疑等深层追问路径 |
+| 学习/认知困惑 | 「为什么越努力越焦虑」 | 从方向、方法、预期管理等维度展开问题树 |
+
+### 原有解决方案及其不足
+
+| 方案 | 局限 |
+|------|------|
+| 自我反思/日记 | 缺乏结构化引导，容易陷入情绪循环，难以持续深挖 |
+| 找朋友/心理咨询 | 时间成本高、门槛高，不能随时随地使用 |
+| 直接问 ChatGPT | 线性对话无法呈现思维的分支结构，缺少可视化，容易跑题 |
+| 思维导图工具 | 需要用户自己构建内容，没有 AI 辅助追问 |
+
+### Whyth 的优化维度
+
+| 维度 | 优化内容 |
+|------|---------|
+| **交互形式** | 从线性对话 → 可交互的树形结构，支持自由探索任意分支 |
+| **认知引导** | AI 自动生成多维度追问，用户只需点击即可深入，降低自我追问门槛 |
+| **可视化** | 树形图直观呈现思维层级，手绘风格降低心理压力 |
+| **即时性** | 无需预约、无需倾诉对象，输入即生成，随时随地可用 |
+| **探索自由度** | 不限方向，任意节点均可展开，用户掌控探索路径 |
+
+---
+
+## 竞品分析
+
+目前市面上**没有直接竞品**同时满足「AI 反向追问 + 树形可视化 + 可交互探索」这三个特征。
+
+| 产品/方向 | 与 Whyth 的差异 |
+|-----------|----------------|
+| ChatGPT / Claude 等对话 AI | 线性对话，无树形结构，无可视化 |
+| Miro / XMind 等思维导图 | 需手动构建，无 AI 自动追问 |
+| 心理测评类 App | 标准化量表，非个性化追问 |
+| Socratic 类教育工具 | 面向学科知识，非面向个人感受/决策 |
+
+Whyth 定位于**AI 辅助自我追问工具**这一空白领域，融合了 LLM 的语义理解能力和树形可视化的认知优势。
+
+---
+
+## 技术架构
+
+### 整体架构
+
+```
+┌─────────────────────────────────────────────────────┐
+│                    客户端（浏览器）                    │
+│                                                     │
+│  ┌───────────┐  ┌──────────┐  ┌──────────────────┐  │
+│  │ React 19  │  │ Zustand  │  │   D3.js v7       │  │
+│  │ 页面路由   │  │ 状态管理  │  │   树形可视化      │  │
+│  └─────┬─────┘  └────┬─────┘  └────────┬─────────┘  │
+│        │             │                  │            │
+│  ┌─────┴─────────────┴──────────────────┴─────────┐  │
+│  │           Next.js 16 App Router                │  │
+│  │     (页面渲染 + API Route 代理层)               │  │
+│  └──────────────────┬─────────────────────────────┘  │
+└─────────────────────┼───────────────────────────────┘
+                      │ POST /api/generate
+                      │ POST /api/expand
+                      ▼
+            ┌──────────────────┐
+            │  MiniMax M2.5    │
+            │  (LLM 推理层)    │
+            │  OpenAI 兼容 API │
+            └──────────────────┘
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 技术栈
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| 层级 | 技术选型 | 说明 |
+|------|---------|------|
+| 前端框架 | Next.js 16 + TypeScript | App Router，服务端/客户端混合渲染 |
+| UI 渲染 | React 19 | 最新并发特性 |
+| 样式方案 | Tailwind CSS v4 | 原子化 CSS，`@import "tailwindcss"` 新语法 |
+| 树形可视化 | D3.js v7 | SVG 手绘风树木渲染，支持缩放/拖拽 |
+| 页面动画 | Framer Motion | 页面转场、组件入场动画 |
+| 背景效果 | ogl (WebGL) | Grainient 渐变颗粒背景 |
+| 状态管理 | Zustand 5 | 轻量 store + localStorage 持久化 |
+| LLM 调用 | OpenAI SDK (兼容层) | 通过 MiniMax API（OpenAI 兼容格式） |
+| 部署 | Vercel + GitHub | 自动化 CI/CD |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 技术路线
 
-## Learn More
+```
+用户输入
+  ↓
+Next.js API Route (/api/generate)
+  ↓
+MiniMax M2.5 LLM → 生成 JSON（根节点 + 3-4 个追问节点）
+  ↓
+Zustand Store 更新树状态
+  ↓
+D3.js 渲染 SVG 树形图（手绘风树干 + 叶片簇 + 生长动画）
+  ↓
+用户点击节点 → /api/expand → LLM 生成子节点 → 树继续生长
+  ↓
+localStorage 持久化（保存/恢复历史树苗）
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 目录结构
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+whyth/
+├── app/
+│   ├── page.tsx                          # 首页（输入 + 模板 + 历史列表）
+│   ├── layout.tsx                        # 根布局（全局 WebGL 背景）
+│   ├── globals.css                       # 全局样式与动画
+│   ├── tree/[id]/page.tsx                # 树形探索页
+│   └── api/
+│       ├── generate/route.ts             # 生成初始树
+│       └── expand/route.ts               # 展开子节点
+├── components/
+│   ├── Background/                       # WebGL 渐变颗粒背景
+│   ├── Landing/                          # 首页组件（输入框/模板卡片/历史列表）
+│   ├── Loading/                          # 破土生长 SVG 动画
+│   ├── Tree/                             # 树形画布/工具栏/详情抽屉
+│   └── Onboarding/                       # 新手引导（首页 + 树页面）
+├── lib/
+│   ├── llm.ts                            # LLM 调用封装
+│   ├── tree-store.ts                     # Zustand 状态管理
+│   ├── prompts.ts                        # Prompt 模板
+│   └── utils.ts                          # 工具函数
+├── types/
+│   └── tree.ts                           # TypeScript 类型定义
+└── .env.local                            # API 密钥（不入仓库）
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 本地开发
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+# 克隆项目
+git clone https://github.com/jiushiaaa/-Whyth-.git
+cd whyth
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# 安装依赖
+npm install
+
+# 配置环境变量
+cp .env.example .env.local
+# 编辑 .env.local，填入 MiniMax API Key
+
+# 启动开发服务器
+npm run dev
+```
+
+环境变量配置：
+
+```env
+OPENAI_API_KEY=你的MiniMax_API_Key
+OPENAI_BASE_URL=https://api.minimaxi.com/v1
+OPENAI_MODEL=MiniMax-M2.5
+```
+
+访问 [http://localhost:3000](http://localhost:3000) 开始使用。
+
+---
+
+## 许可证
+
+MIT

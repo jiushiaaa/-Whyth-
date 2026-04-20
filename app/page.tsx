@@ -1,17 +1,16 @@
 // app/page.tsx
 'use client'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+
 import { motion } from 'framer-motion'
 import { TemplateCards } from '@/components/Landing/TemplateCards'
 import { SavedTreeList } from '@/components/Landing/SavedTreeList'
 import { InputBox } from '@/components/Landing/InputBox'
 import { BlurText } from '@/components/Landing/BlurText'
-import { HomeTour } from '@/components/Onboarding/HomeTour'
+import { HomeTour, requestHomeTour } from '@/components/Onboarding/HomeTour'
 
 export default function LandingPage() {
   const [inputValue, setInputValue] = useState('')
-  const router = useRouter()
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6">
@@ -25,24 +24,22 @@ export default function LandingPage() {
         <div data-tour="logo"><WhythLogo /></div>
 
         {/* 标题 */}
-        <div data-tour="title">
-          <h1 className="text-center mb-1 mt-8">
-            <BlurText
-              text="你有答案"
-              className="text-4xl text-[#1A1208] leading-normal"
-              delay={100}
-              offsetY={-16}
-            />
-          </h1>
-          <h2 className="text-center mb-4">
-            <BlurText
-              text="但你找到问题了吗？"
-              className="text-2xl text-[#4A3728] leading-normal"
-              delay={80}
-              offsetY={12}
-            />
-          </h2>
-        </div>
+        <h1 data-tour="title" className="text-center mb-1 mt-8">
+          <BlurText
+            text="你有答案"
+            className="text-4xl text-[#1A1208] leading-normal"
+            delay={100}
+            offsetY={-16}
+          />
+        </h1>
+        <h2 className="text-center mb-4">
+          <BlurText
+            text="但你找到问题了吗？"
+            className="text-2xl text-[#4A3728] leading-normal"
+            delay={80}
+            offsetY={12}
+          />
+        </h2>
 
         <motion.p
           className="text-sm text-center mb-10 font-normal tracking-wide"
@@ -55,7 +52,7 @@ export default function LandingPage() {
         </motion.p>
 
         <div data-tour="input" className="w-full"><InputBox initialValue={inputValue} /></div>
-        <div data-tour="templates" className="w-full"><TemplateCards onSelect={setInputValue} /></div>
+        <TemplateCards onSelect={setInputValue} />
         <SavedTreeList />
       </motion.div>
 
@@ -70,10 +67,7 @@ export default function LandingPage() {
         transition={{ delay: 1.2 }}
         onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#6B4F2C' }}
         onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#C4B89A' }}
-        onClick={() => {
-          localStorage.removeItem('whyth_onboarded')
-          router.push('/tree/demo')
-        }}
+        onClick={() => requestHomeTour()}
       >
         ?
       </motion.button>

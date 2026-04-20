@@ -3,14 +3,19 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const STEPS = [
-  { target: 'logo', title: '欢迎来到 Whyth', desc: '反向思维树引擎，从答案倒推真正的问题' },
+  { target: 'input', title: '欢迎来到 Whyth', desc: '在这里输入感受、困惑或结论，开始反向追问' },
   { target: 'title', title: '核心理念', desc: '你有答案，但你找到问题了吗？' },
-  { target: 'input', title: '输入你的想法', desc: '在这里输入感受、困惑或结论' },
   { target: 'templates', title: '没有灵感？', desc: '选一个模板快速开始体验' },
   { target: 'help', title: '随时重看引导', desc: '点这里可以再次查看引导' },
 ]
 
 const STORAGE_KEY = 'whyth_home_onboarded'
+
+let triggerTour: (() => void) | null = null
+
+export function requestHomeTour() {
+  if (triggerTour) triggerTour()
+}
 
 export function HomeTour() {
   const [step, setStep] = useState(0)
@@ -21,6 +26,11 @@ export function HomeTour() {
     const el = document.querySelector(`[data-tour="${STEPS[step]?.target}"]`)
     if (el) setRect(el.getBoundingClientRect())
   }, [step])
+
+  useEffect(() => {
+    triggerTour = () => { setStep(0); setVisible(true) }
+    return () => { triggerTour = null }
+  }, [])
 
   useEffect(() => {
     if (localStorage.getItem(STORAGE_KEY)) return
@@ -48,8 +58,14 @@ export function HomeTour() {
   if (!visible || !rect) return null
 
   const pad = 8
-  const cardTop = rect.bottom + pad + 12
-  const cardLeft = Math.max(16, Math.min(rect.left, window.innerWidth - 300))
+  const cardW = 280
+  const cardH = 160
+  const spaceBelow = window.innerHeight - rect.bottom - pad
+  const placeAbove = spaceBelow < cardH + 24
+  const cardTop = placeAbove ? rect.top - pad - cardH - 12 : rect.bottom + pad + 12
+  const cardRight = window.innerWidth - rect.right
+  const nearRight = cardRight < cardW
+  const cardLeft = nearRight ? window.innerWidth - cardW - 40 : Math.max(16, rect.left)
 
   return (
     <AnimatePresence>

@@ -51,6 +51,20 @@ function extractJSON(raw: string): string {
   return text
 }
 
+function tryParseJSON(text: string): unknown {
+  try {
+    return JSON.parse(text)
+  } catch {
+    const repaired = text
+      .replace(/:\s*([^"\[\]{},\s][^,\}\]]*?)(\s*[,\}\]])/g, (_, val, tail) => {
+        const trimmed = val.trim()
+        if (/^(true|false|null|-?\d+(\.\d+)?)$/.test(trimmed)) return `: ${trimmed}${tail}`
+        return `: "${trimmed}"${tail}`
+      })
+    return JSON.parse(repaired)
+  }
+}
+
 export async function generateTree(input: string): Promise<GenerateResponse> {
   const completion = await openai.chat.completions.create({
     model: MODEL,
@@ -63,8 +77,7 @@ export async function generateTree(input: string): Promise<GenerateResponse> {
   if (!raw) throw new Error('Empty response from LLM')
   const content = extractJSON(raw)
 
-  const parsed = JSON.parse(content) as GenerateResponse
-  // 基础结构校验：确保 LLM 返回了预期的 nodes 数组
+  const parsed = tryParseJSON(content) as GenerateResponse
   if (!parsed.rootLabel || !Array.isArray(parsed.nodes) || parsed.nodes.length === 0) {
     throw new Error('LLM response missing required fields')
   }
@@ -88,8 +101,7 @@ export async function expandNode(
   if (!raw) throw new Error('Empty response from LLM')
   const content = extractJSON(raw)
 
-  const parsed = JSON.parse(content) as ExpandResponse
-  // 基础结构校验：确保 LLM 返回了预期的 nodes 数组
+  const parsed = tryParseJSON(content) as ExpandResponse
   if (!Array.isArray(parsed.nodes) || parsed.nodes.length === 0) {
     throw new Error('LLM expand response missing nodes')
   }

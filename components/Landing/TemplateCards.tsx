@@ -14,7 +14,7 @@ interface TemplateCardsProps {
 
 export function TemplateCards({ onSelect }: TemplateCardsProps) {
   return (
-    <div className="grid grid-cols-3 gap-3 mt-6 w-full">
+    <div data-tour="templates" className="grid grid-cols-3 gap-3 mt-6 w-full">
       {TEMPLATES.map((t, i) => (
         <motion.div
           key={t.type}
