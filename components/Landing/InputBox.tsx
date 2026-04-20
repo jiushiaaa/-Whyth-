@@ -24,6 +24,7 @@ export function InputBox({ initialValue = '' }: InputBoxProps) {
   const [error, setError] = useState('')
   const { initTree, setLoading } = useTreeStore()
   const router = useRouter()
+
   useEffect(() => {
     if (initialValue) setValue(initialValue)
   }, [initialValue])
@@ -74,7 +75,8 @@ export function InputBox({ initialValue = '' }: InputBoxProps) {
           {!value && (
             <motion.div
               key={placeholderIdx}
-              className="absolute left-4 top-4 text-white/30 font-light pointer-events-none text-sm"
+              className="absolute left-4 top-4 font-light pointer-events-none text-sm"
+              style={{ color: '#C4B89A' }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -90,21 +92,34 @@ export function InputBox({ initialValue = '' }: InputBoxProps) {
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
           rows={3}
-          className="w-full bg-white/[0.04] border border-white/10 rounded-2xl px-4 py-4 text-white font-light text-sm resize-none outline-none transition-all focus:border-white/30 focus:bg-white/[0.06] placeholder-transparent"
-          style={{ caretColor: '#4DFFC3' }}
+          className="w-full rounded-2xl px-4 py-4 font-light text-sm resize-none outline-none transition-all placeholder-transparent"
+          style={{
+            background: 'rgba(237,230,216,0.7)',
+            border: '1px solid rgba(107,79,44,0.18)',
+            color: '#2C2416',
+            caretColor: '#C8702A',
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = 'rgba(107,79,44,0.4)'
+            e.target.style.background = 'rgba(237,230,216,0.95)'
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = 'rgba(107,79,44,0.18)'
+            e.target.style.background = 'rgba(237,230,216,0.7)'
+          }}
         />
       </div>
 
       {error && (
-        <p className="text-red-400/80 text-xs mt-2 text-center">{error}</p>
+        <p className="text-red-600/70 text-xs mt-2 text-center">{error}</p>
       )}
 
       <motion.button
         onClick={handleSubmit}
         disabled={!value.trim() || isSubmitting}
         className="mt-4 w-full py-3 rounded-xl text-sm font-light tracking-widest transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-        style={{ background: 'linear-gradient(135deg, #4DFFC3 0%, #7B61FF 100%)', color: '#080808' }}
-        whileHover={value.trim() && !isSubmitting ? { scale: 1.01, opacity: 0.9 } : {}}
+        style={{ background: 'linear-gradient(135deg, #C8702A 0%, #6B4F2C 100%)', color: '#F5F0E8' }}
+        whileHover={value.trim() && !isSubmitting ? { scale: 1.01, opacity: 0.92 } : {}}
         whileTap={value.trim() && !isSubmitting ? { scale: 0.98 } : {}}
       >
         {isSubmitting ? '生长中…' : '让它生长'}

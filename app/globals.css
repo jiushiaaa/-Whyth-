@@ -1,25 +1,39 @@
 /* app/globals.css */
+/* Noto Sans SC 网络回退（macOS / Linux 无微软雅黑时加载），必须在所有规则之前 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
 @import "tailwindcss";
 
-::selection {
-  background: rgba(77, 255, 195, 0.3);
+/* ── 字体：微软雅黑优先，跨平台回退 ─────────────────────────── */
+/* Windows: 微软雅黑 | macOS/iOS: PingFang SC | 通用: Noto Sans SC */
+body {
+  font-family: 'Microsoft YaHei', '微软雅黑', 'PingFang SC', 'Noto Sans SC',
+    'Helvetica Neue', Arial, sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── 文字选中 ──────────────────────────────────────────────── */
+::selection {
+  background: rgba(139, 105, 20, 0.25);
+}
+
+/* ── 滚动条 ───────────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: #111;
+  background: #EDE6D8;
 }
 ::-webkit-scrollbar-thumb {
-  background: #333;
+  background: #C4B89A;
   border-radius: 2px;
 }
 
-/* 节点脉动动画 */
+/* ── 节点脉动动画 ────────────────────────────────────────── */
 @keyframes pulse-node {
   0%, 100% { opacity: 0.5; transform: scale(1); }
-  50% { opacity: 0.2; transform: scale(1.6); }
+  50%       { opacity: 0.2; transform: scale(1.6); }
 }
 
 .node .pulse {
@@ -28,12 +42,12 @@
   transform-box: fill-box;
 }
 
-/* 页面背景噪点纹理 */
+/* ── 页面背景噪点纹理 ────────────────────────────────────── */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.025'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 0;
 }

@@ -20,7 +20,7 @@ export function GrowthAnimation() {
   }, [])
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-end pb-32 overflow-hidden bg-[#080808]">
+    <div className="min-h-screen flex flex-col items-center justify-end pb-32 overflow-hidden bg-[#F2EDE4]">
       {/* 生长 SVG */}
       <svg
         width="160"
@@ -33,7 +33,7 @@ export function GrowthAnimation() {
         {/* 主干 */}
         <motion.path
           d="M80 320 C80 280 80 240 80 200 C80 160 70 140 60 120"
-          stroke="white"
+          stroke="#6B4F2C"
           strokeWidth="1.5"
           fill="none"
           initial={{ pathLength: 0, opacity: 0.6 }}
@@ -43,7 +43,7 @@ export function GrowthAnimation() {
         {/* 左枝 */}
         <motion.path
           d="M60 120 C50 100 30 90 10 80"
-          stroke="#F5C842"
+          stroke="#C8702A"
           strokeWidth="1.2"
           fill="none"
           initial={{ pathLength: 0 }}
@@ -53,7 +53,7 @@ export function GrowthAnimation() {
         {/* 右枝 */}
         <motion.path
           d="M60 120 C70 100 100 90 130 85"
-          stroke="#4DFFC3"
+          stroke="#4A7C3F"
           strokeWidth="1.2"
           fill="none"
           initial={{ pathLength: 0 }}
@@ -63,7 +63,7 @@ export function GrowthAnimation() {
         {/* 中枝 */}
         <motion.path
           d="M60 120 C65 95 72 80 75 60"
-          stroke="#7B61FF"
+          stroke="#2D6B4F"
           strokeWidth="1"
           fill="none"
           initial={{ pathLength: 0 }}
@@ -72,9 +72,9 @@ export function GrowthAnimation() {
         />
         {/* 枝端节点 */}
         {[
-          { cx: 10, cy: 80, color: '#F5C842', delay: 1.8 },
-          { cx: 130, cy: 85, color: '#4DFFC3', delay: 1.9 },
-          { cx: 75, cy: 60, color: '#7B61FF', delay: 2.0 },
+          { cx: 10, cy: 80, color: '#C8702A', delay: 1.8 },
+          { cx: 130, cy: 85, color: '#4A7C3F', delay: 1.9 },
+          { cx: 75, cy: 60, color: '#2D6B4F', delay: 2.0 },
         ].map((node, i) => (
           <motion.circle
             key={i}
@@ -92,7 +92,7 @@ export function GrowthAnimation() {
           cx={80}
           cy={320}
           r={6}
-          fill="white"
+          fill="#6B4F2C"
           initial={{ opacity: 1 }}
           animate={{ opacity: [1, 0.5, 1] }}
           transition={{ duration: 1.5, repeat: Infinity }}
@@ -103,7 +103,8 @@ export function GrowthAnimation() {
       <AnimatePresence mode="wait">
         <motion.p
           key={msgIdx}
-          className="text-white/40 text-sm font-light tracking-widest"
+          className="text-sm font-light tracking-widest"
+          style={{ color: '#6B4F2C' }}
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}

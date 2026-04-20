@@ -8,26 +8,28 @@ export function generateId(): string {
 }
 
 /**
- * 节点样式由深度（depth）决定，而非节点类型（NodeType）。
- * 设计决定：视觉上体现"探索深度"而非内容分类，颜色随深度渐变：
- * depth 0 = 白（根/起点）→ depth 1 = 金黄 → depth 2 = 青绿 → depth 3+ = 蓝紫
+ * 节点样式由深度（depth）决定，颜色随深度模拟树木生长：
+ * depth 0 = 深棕树干（根）
+ * depth 1 = 橡木金（低枝）
+ * depth 2 = 森林绿（中层叶）
+ * depth 3+ = 苔藓深绿（深层）
  */
 export function getNodeColor(depth: number): string {
   const colors: Record<number, string> = {
-    0: '#FFFFFF',
-    1: '#F5C842',
-    2: '#4DFFC3',
+    0: '#6B4F2C',  // 深棕 — 树干/根
+    1: '#C8702A',  // 暖橙棕 — 低枝
+    2: '#4A7C3F',  // 森林绿 — 中层叶
   }
-  return colors[depth] ?? '#7B61FF'
+  return colors[depth] ?? '#2D6B4F'  // 苔藓深绿 — 深层
 }
 
 export function getNodeGlow(depth: number): string {
   const glows: Record<number, string> = {
-    0: 'rgba(255,255,255,0.3)',
-    1: 'rgba(245,200,66,0.25)',
-    2: 'rgba(77,255,195,0.2)',
+    0: 'rgba(107, 79, 44, 0.18)',
+    1: 'rgba(200, 112, 42, 0.15)',
+    2: 'rgba(74, 124, 63, 0.15)',
   }
-  return glows[depth] ?? 'rgba(123,97,255,0.2)'
+  return glows[depth] ?? 'rgba(45, 107, 79, 0.15)'
 }
 
 export function getNodeRadius(depth: number): number {

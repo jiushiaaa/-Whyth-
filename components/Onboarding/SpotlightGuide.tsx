@@ -59,7 +59,8 @@ export function SpotlightGuide() {
         >
           {/* 遮罩 */}
           <motion.div
-            className="absolute inset-0 bg-black/60 pointer-events-auto"
+            className="absolute inset-0 pointer-events-auto"
+            style={{ background: 'rgba(44,36,22,0.35)' }}
             onClick={handleNext}
           />
 
@@ -68,8 +69,8 @@ export function SpotlightGuide() {
             className="relative z-10 pointer-events-auto max-w-xs w-full mx-6"
             style={{
               marginRight: current.position === 'right' ? '340px' : undefined,
-              background: '#111',
-              border: '1px solid rgba(255,255,255,0.1)',
+              background: '#EDE6D8',
+              border: '1px solid rgba(107,79,44,0.18)',
               borderRadius: '16px',
               padding: '24px',
             }}
@@ -85,25 +86,28 @@ export function SpotlightGuide() {
                 <div
                   key={i}
                   className="h-0.5 flex-1 rounded-full transition-all duration-300"
-                  style={{ background: i <= step ? '#4DFFC3' : 'rgba(255,255,255,0.15)' }}
+                  style={{ background: i <= step ? '#C8702A' : 'rgba(107,79,44,0.18)' }}
                 />
               ))}
             </div>
 
-            <h3 className="text-white text-base font-light mb-2">{current.title}</h3>
-            <p className="text-white/50 text-sm font-light leading-relaxed mb-6">{current.desc}</p>
+            <h3 className="text-base font-light mb-2" style={{ color: '#2C2416' }}>{current.title}</h3>
+            <p className="text-sm leading-relaxed mb-6" style={{ color: '#4A3728' }}>{current.desc}</p>
 
             <div className="flex gap-3 items-center">
               <button
                 onClick={handleSkip}
-                className="text-white/25 text-sm hover:text-white/45 transition-colors"
+                className="text-sm transition-colors"
+                style={{ color: '#C4B89A' }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = '#8A7A64' }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = '#C4B89A' }}
               >
                 跳过
               </button>
               <motion.button
                 onClick={handleNext}
                 className="ml-auto px-5 py-2 rounded-xl text-sm font-light"
-                style={{ background: '#4DFFC322', border: '1px solid #4DFFC344', color: '#4DFFC3' }}
+                style={{ background: 'rgba(200,112,42,0.12)', border: '1px solid rgba(200,112,42,0.35)', color: '#C8702A' }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
               >

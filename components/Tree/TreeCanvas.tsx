@@ -81,7 +81,7 @@ export function TreeCanvas() {
         style={{ display: 'block' }}
       />
       {isLoading && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/30 text-xs font-light tracking-widest">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-xs font-light tracking-widest" style={{ color: '#A8956E' }}>
           生长中…
         </div>
       )}

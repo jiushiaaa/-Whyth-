@@ -1,10 +1,7 @@
 // app/layout.tsx
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
-import { Inter } from 'next/font/google'
 import './globals.css'
-
-const inter = Inter({ subsets: ['latin'], weight: ['300', '400', '500'] })
 
 export const metadata: Metadata = {
   title: 'Whyth — 你有答案，但你找到问题了吗？',
@@ -14,7 +11,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="zh">
-      <body className={`${inter.className} bg-[#080808] text-white min-h-screen`}>
+      <body className="bg-[#F2EDE4] text-[#1A1208] min-h-screen">
         {children}
       </body>
     </html>
