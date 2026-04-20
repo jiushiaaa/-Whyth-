@@ -1,65 +1,64 @@
-import Image from "next/image";
+// app/page.tsx
+'use client'
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { SeedAnimation } from '@/components/Landing/SeedAnimation'
+import { TemplateCards } from '@/components/Landing/TemplateCards'
+import { InputBox } from '@/components/Landing/InputBox'
 
-export default function Home() {
+export default function LandingPage() {
+  const [inputValue, setInputValue] = useState('')
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+    <main className="min-h-screen flex flex-col items-center justify-center px-6 py-16">
+      <motion.div
+        className="flex flex-col items-center w-full max-w-xl"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+      >
+        <SeedAnimation />
+
+        <motion.h1
+          className="text-2xl font-light text-white text-center leading-snug mb-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          你有答案
+          <br />
+          <span className="text-white/40">但你找到问题了吗？</span>
+        </motion.h1>
+
+        <motion.p
+          className="text-white/30 text-xs text-center mb-10 font-light"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          输入你的感受、困惑或结论，让 Whyth 帮你逆向追问
+        </motion.p>
+
+        <InputBox initialValue={inputValue} />
+        <TemplateCards onSelect={setInputValue} />
+      </motion.div>
+
+      {/* 右下角引导入口 */}
+      <motion.button
+        className="fixed bottom-6 right-6 w-9 h-9 rounded-full border border-white/10 bg-white/[0.04] text-white/40 text-sm flex items-center justify-center hover:border-white/25 hover:text-white/60 transition-all"
+        title="新手引导"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+        onClick={() => {
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('whyth_onboarded')
+            window.location.href = '/tree/demo'
+          }
+        }}
+      >
+        ?
+      </motion.button>
+    </main>
+  )
 }
