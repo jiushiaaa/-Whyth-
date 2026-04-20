@@ -77,6 +77,8 @@ export default function LandingPage() {
       >
         ?
       </motion.button>
+
+      <HomeTour />
     </main>
   )
 }
