@@ -31,3 +31,12 @@ export interface GenerateResponse {
 export interface ExpandResponse {
   nodes: Omit<TreeNode, 'depth' | 'status' | 'children' | 'x' | 'y' | 'parentId'>[]
 }
+
+export interface SavedTree {
+  id: string
+  userInput: string
+  root: TreeNode
+  createdAt: number
+  updatedAt: number
+  nodeCount: number
+}

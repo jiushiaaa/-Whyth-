@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { TemplateCards } from '@/components/Landing/TemplateCards'
+import { SavedTreeList } from '@/components/Landing/SavedTreeList'
 import { InputBox } from '@/components/Landing/InputBox'
 import { BlurText } from '@/components/Landing/BlurText'
 
@@ -52,6 +53,7 @@ export default function LandingPage() {
 
         <InputBox initialValue={inputValue} />
         <TemplateCards onSelect={setInputValue} />
+        <SavedTreeList />
       </motion.div>
 
       {/* 右下角帮助按钮 */}
