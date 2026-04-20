@@ -82,6 +82,7 @@ export const useTreeStore = create<TreeStore>((set, get) => ({
     if (!parent) return
 
     const parentDepth = getDepth(newRoot, parentId)
+    if (parentDepth === -1) return // unreachable, but guard against future refactors
     const newChildren: TreeNode[] = rawNodes.map((n) => ({
       ...n,
       id: generateId(),
