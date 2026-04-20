@@ -1,5 +1,6 @@
 // app/layout.tsx
 import type { Metadata } from 'next'
+import type { ReactNode } from 'react'
 import { Inter } from 'next/font/google'
 import './globals.css'
 
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
   description: '反向思维树引擎，从结论逆向追问真正的问题',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="zh">
       <body className={`${inter.className} bg-[#080808] text-white min-h-screen`}>

@@ -7,6 +7,11 @@ export function generateId(): string {
   return nanoid()
 }
 
+/**
+ * 节点样式由深度（depth）决定，而非节点类型（NodeType）。
+ * 设计决定：视觉上体现"探索深度"而非内容分类，颜色随深度渐变：
+ * depth 0 = 白（根/起点）→ depth 1 = 金黄 → depth 2 = 青绿 → depth 3+ = 蓝紫
+ */
 export function getNodeColor(depth: number): string {
   const colors: Record<number, string> = {
     0: '#FFFFFF',

@@ -23,6 +23,11 @@ export interface GenerateResponse {
   nodes: Omit<TreeNode, 'depth' | 'status' | 'children' | 'x' | 'y'>[]
 }
 
+/**
+ * ExpandResponse — LLM expand API 返回的节点数据
+ * parentId 由调用层（tree-store.expandNode）注入，此处不返回
+ * depth 和 status 也由 store 根据树结构自动计算
+ */
 export interface ExpandResponse {
   nodes: Omit<TreeNode, 'depth' | 'status' | 'children' | 'x' | 'y' | 'parentId'>[]
 }
