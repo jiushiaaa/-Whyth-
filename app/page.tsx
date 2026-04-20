@@ -1,6 +1,7 @@
 // app/page.tsx
 'use client'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { SeedAnimation } from '@/components/Landing/SeedAnimation'
 import { TemplateCards } from '@/components/Landing/TemplateCards'
@@ -8,6 +9,7 @@ import { InputBox } from '@/components/Landing/InputBox'
 
 export default function LandingPage() {
   const [inputValue, setInputValue] = useState('')
+  const router = useRouter()
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 py-16">
@@ -51,10 +53,8 @@ export default function LandingPage() {
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
         onClick={() => {
-          if (typeof window !== 'undefined') {
-            localStorage.removeItem('whyth_onboarded')
-            window.location.href = '/tree/demo'
-          }
+          localStorage.removeItem('whyth_onboarded')
+          router.push('/tree/demo')
         }}
       >
         ?

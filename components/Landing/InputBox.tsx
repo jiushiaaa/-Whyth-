@@ -1,6 +1,6 @@
 // components/Landing/InputBox.tsx
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTreeStore } from '@/lib/tree-store'
 import { useRouter } from 'next/navigation'
@@ -24,8 +24,6 @@ export function InputBox({ initialValue = '' }: InputBoxProps) {
   const [error, setError] = useState('')
   const { initTree, setLoading } = useTreeStore()
   const router = useRouter()
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-
   useEffect(() => {
     if (initialValue) setValue(initialValue)
   }, [initialValue])
@@ -53,6 +51,7 @@ export function InputBox({ initialValue = '' }: InputBoxProps) {
       const data = await res.json()
       initTree(data.rootLabel, data.rootType, data.nodes, value.trim())
       const treeId = generateId()
+      setLoading(false)
       router.push(`/tree/${treeId}`)
     } catch {
       setError('生成失败，请检查网络或 API Key 后重试')
@@ -87,7 +86,6 @@ export function InputBox({ initialValue = '' }: InputBoxProps) {
         </AnimatePresence>
 
         <textarea
-          ref={textareaRef}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}

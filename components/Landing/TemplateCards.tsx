@@ -17,7 +17,7 @@ export function TemplateCards({ onSelect }: TemplateCardsProps) {
     <div className="flex gap-3 mt-8 flex-wrap justify-center">
       {TEMPLATES.map((t, i) => (
         <motion.button
-          key={i}
+          key={t.type}
           onClick={() => onSelect(t.text)}
           className="px-4 py-3 rounded-xl border border-white/10 bg-white/[0.03] text-left cursor-pointer transition-all"
           style={{ minWidth: 160 }}
