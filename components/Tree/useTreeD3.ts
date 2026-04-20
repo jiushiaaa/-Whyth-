@@ -63,52 +63,82 @@ export function useTreeD3({ root, selectedNodeId, onNodeClick }: UseTreeD3Option
     const nodes = flattenTree(root)
     const links = getLinks(root)
 
-    // 定义发光滤镜
     const defs = d3.select(svg).select<SVGDefsElement>('defs')
-    nodes.forEach((node) => {
-      const filterId = `glow-${node.depth}`
-      if (defs.select(`#${filterId}`).empty()) {
-        const filter = defs.append('filter').attr('id', filterId)
-        filter.append('feGaussianBlur').attr('stdDeviation', '2').attr('result', 'coloredBlur')
-        const feMerge = filter.append('feMerge')
-        feMerge.append('feMergeNode').attr('in', 'coloredBlur')
-        feMerge.append('feMergeNode').attr('in', 'SourceGraphic')
+
+    if (defs.select('#bark-texture').empty()) {
+      const bark = defs.append('filter').attr('id', 'bark-texture')
+        .attr('x', '-10%').attr('y', '-10%').attr('width', '120%').attr('height', '120%')
+      bark.append('feTurbulence')
+        .attr('type', 'fractalNoise').attr('baseFrequency', '0.04')
+        .attr('numOctaves', '3').attr('seed', '2').attr('result', 'noise')
+      bark.append('feDisplacementMap')
+        .attr('in', 'SourceGraphic').attr('in2', 'noise')
+        .attr('scale', '2').attr('xChannelSelector', 'R').attr('yChannelSelector', 'G')
+    }
+
+    if (defs.select('#soil-texture').empty()) {
+      const soil = defs.append('filter').attr('id', 'soil-texture')
+      soil.append('feTurbulence')
+        .attr('type', 'turbulence').attr('baseFrequency', '0.08')
+        .attr('numOctaves', '2').attr('seed', '5').attr('result', 'noise')
+      soil.append('feDisplacementMap')
+        .attr('in', 'SourceGraphic').attr('in2', 'noise')
+        .attr('scale', '1.5')
+    }
+
+    links.forEach((link) => {
+      const gradId = `branch-grad-${link.source.id}-${link.target.id}`
+      if (defs.select(`#${gradId}`).empty()) {
+        const [startColor, endColor] = getBranchGradientColors(link.target.depth)
+        const grad = defs.append('linearGradient').attr('id', gradId)
+          .attr('gradientUnits', 'userSpaceOnUse')
+        grad.append('stop').attr('offset', '0%').attr('stop-color', startColor)
+        grad.append('stop').attr('offset', '100%').attr('stop-color', endColor)
       }
     })
 
+    const totalNodes = nodes.length
+    const useBarkFilter = totalNodes <= 30
+
     // ── 枝干层（link layer） ──────────────────────────────────────
     const linkSel = d3.select(linkG)
-      .selectAll<SVGPathElement, (typeof links)[0]>('.link')
-      .data(links, (d) => `${d.source.id}-${d.target.id}`)
+      .selectAll<SVGPathElement, typeof links[0]>('.link')
+      .data(links, d => `${d.source.id}-${d.target.id}`)
 
-    // 新增连线：从 0 长度生长出来
     linkSel.enter()
       .append('path')
       .attr('class', 'link')
       .attr('fill', 'none')
-      .attr('stroke', (d) => getNodeColor(d.target.depth))
-      .attr('stroke-opacity', 0.7)          // 浅色背景下加深，原来 0.35 太淡
-      .attr('stroke-width', (d) => Math.max(1.5, 3 - d.target.depth * 0.6))
-      .attr('d', (d) => {
+      .attr('stroke', d => `url(#branch-grad-${d.source.id}-${d.target.id})`)
+      .attr('stroke-opacity', 0.85)
+      .attr('stroke-width', d => getBranchWidth(d.target.depth))
+      .attr('stroke-linecap', 'round')
+      .attr('filter', d => (useBarkFilter && d.target.depth <= 1) ? 'url(#bark-texture)' : null)
+      .attr('d', d => {
         const sx = d.source.x ?? 0, sy = d.source.y ?? 0
         const tx = d.target.x ?? 0, ty = d.target.y ?? 0
-        return `M${sx},${sy} C${sx},${(sy + ty) / 2} ${tx},${(sy + ty) / 2} ${tx},${ty}`
+        const rng = seededRandom(d.source.id + d.target.id)
+        const ox = (rng() - 0.5) * 8
+        const oy = (rng() - 0.5) * 6
+        const mx = (sx + tx) / 2 + ox
+        const my = (sy + ty) / 2 + oy
+        return `M${sx},${sy} Q${mx},${my} ${tx},${ty}`
       })
       .attr('stroke-dasharray', function() { return (this as SVGPathElement).getTotalLength() })
       .attr('stroke-dashoffset', function() { return (this as SVGPathElement).getTotalLength() })
       .transition().duration(700).ease(d3.easeQuadOut)
       .attr('stroke-dashoffset', 0)
 
-    // 已有连线：更新路径（节点移动时）
-    linkSel
-      .transition().duration(300)
-      .attr('stroke', (d) => getNodeColor(d.target.depth))
-      .attr('stroke-opacity', 0.7)
-      .attr('stroke-width', (d) => Math.max(1.5, 3 - d.target.depth * 0.6))
-      .attr('d', (d) => {
+    linkSel.transition().duration(300)
+      .attr('d', d => {
         const sx = d.source.x ?? 0, sy = d.source.y ?? 0
         const tx = d.target.x ?? 0, ty = d.target.y ?? 0
-        return `M${sx},${sy} C${sx},${(sy + ty) / 2} ${tx},${(sy + ty) / 2} ${tx},${ty}`
+        const rng = seededRandom(d.source.id + d.target.id)
+        const ox = (rng() - 0.5) * 8
+        const oy = (rng() - 0.5) * 6
+        const mx = (sx + tx) / 2 + ox
+        const my = (sy + ty) / 2 + oy
+        return `M${sx},${sy} Q${mx},${my} ${tx},${ty}`
       })
 
     linkSel.exit().remove()
@@ -116,71 +146,108 @@ export function useTreeD3({ root, selectedNodeId, onNodeClick }: UseTreeD3Option
     // ── 节点层（node layer） ──────────────────────────────────────
     const nodeSel = d3.select(nodeG)
       .selectAll<SVGGElement, TreeNode>('.node')
-      .data(nodes, (d) => d.id)
+      .data(nodes, d => d.id)
 
     const nodeEnter = nodeSel.enter()
       .append('g')
       .attr('class', 'node')
-      .attr('transform', (d) => `translate(${d.x ?? 0},${d.y ?? 0})`)
+      .attr('transform', d => `translate(${d.x ?? 0},${d.y ?? 0})`)
       .attr('cursor', 'pointer')
       .on('click', (_, d) => onNodeClick(d))
 
-    // 光晕圆
-    nodeEnter.append('circle')
-      .attr('class', 'glow')
-      .attr('r', (d) => getNodeRadius(d.depth) * 2.5)
-      .attr('fill', (d) => getNodeGlow(d.depth))
-      .attr('opacity', 0)
-      .transition().duration(600).attr('opacity', 1)
+    nodeEnter.filter(d => d.depth === 0).each(function(d) {
+      const g = d3.select(this)
+      g.append('circle')
+        .attr('class', 'soil-ring')
+        .attr('r', 22)
+        .attr('fill', 'none')
+        .attr('stroke', '#8B7355')
+        .attr('stroke-width', 3)
+        .attr('stroke-dasharray', '4 3')
+        .attr('opacity', 0.5)
+        .attr('filter', useBarkFilter ? 'url(#soil-texture)' : null)
+      g.append('circle')
+        .attr('class', 'main')
+        .attr('r', 0)
+        .attr('fill', getNodeColor(0))
+        .attr('stroke', '#5A3E28')
+        .attr('stroke-width', 2.5)
+        .transition().duration(500).ease(d3.easeBackOut)
+        .attr('r', getNodeRadius(0))
+    })
 
-    // 主圆
-    nodeEnter.append('circle')
-      .attr('class', 'main')
-      .attr('r', 0)
-      .attr('fill', (d) => d.status === 'expanded' ? 'none' : getNodeColor(d.depth))
-      .attr('stroke', (d) => getNodeColor(d.depth))
-      .attr('stroke-width', 2)
-      .attr('filter', (d) => `url(#glow-${d.depth})`)
-      .transition().duration(500).ease(d3.easeBackOut)
-      .attr('r', (d) => getNodeRadius(d.depth))
+    nodeEnter.filter(d => d.depth > 0).each(function(d) {
+      const g = d3.select(this)
+      const leafCount = getLeafCount(d.depth)
+      const color = getNodeColor(d.depth)
+      const rng = seededRandom(d.id)
+      const r = getNodeRadius(d.depth)
 
-    // 脉动圆（未探索节点）
-    nodeEnter.append('circle')
-      .attr('class', 'pulse')
-      .attr('r', (d) => getNodeRadius(d.depth))
-      .attr('fill', 'none')
-      .attr('stroke', (d) => getNodeColor(d.depth))
-      .attr('stroke-width', 1.5)
-      .attr('opacity', 0.4)
+      g.append('circle')
+        .attr('r', r * 2.5)
+        .attr('fill', getNodeGlow(d.depth))
+        .attr('opacity', 0)
+        .transition().duration(600).attr('opacity', 1)
 
-    // 标签：字体加深、加粗
+      const cluster = g.append('g').attr('class', 'leaf-cluster')
+      for (let i = 0; i < leafCount; i++) {
+        const angle = (i * (360 / leafCount)) + (rng() - 0.5) * 30
+        const dist = r * 0.4
+        const leafG = cluster.append('g')
+          .attr('transform', `rotate(${angle}) translate(${dist}, 0)`)
+
+        leafG.append('ellipse')
+          .attr('rx', d.depth >= 3 ? 5 : 7)
+          .attr('ry', d.depth >= 3 ? 3 : 3.5)
+          .attr('fill', color)
+          .attr('opacity', 0.85)
+          .attr('transform', 'scale(0)')
+          .transition().delay(300 + i * 80).duration(400)
+          .ease(d3.easeBackOut)
+          .attr('transform', `scale(1) rotate(${(rng() - 0.5) * 20})`)
+
+        leafG.append('line')
+          .attr('x1', d.depth >= 3 ? -4 : -5)
+          .attr('y1', 0)
+          .attr('x2', d.depth >= 3 ? 4 : 5)
+          .attr('y2', 0)
+          .attr('stroke', d.depth <= 1 ? '#A05A20' : '#2A5A30')
+          .attr('stroke-width', 0.5)
+          .attr('opacity', 0)
+          .transition().delay(500 + i * 80).duration(300)
+          .attr('opacity', 0.5)
+      }
+
+      g.append('circle')
+        .attr('class', 'main')
+        .attr('r', 0)
+        .attr('fill', d.status === 'expanded' ? 'none' : color)
+        .attr('stroke', color)
+        .attr('stroke-width', 1.5)
+        .transition().duration(400).ease(d3.easeBackOut)
+        .attr('r', r * 0.5)
+    })
+
     nodeEnter.append('text')
       .attr('class', 'label')
-      .attr('dy', (d) => -getNodeRadius(d.depth) - 7)
+      .attr('dy', d => -getNodeRadius(d.depth) - (d.depth === 0 ? 20 : 14))
       .attr('text-anchor', 'middle')
-      .attr('fill', '#2C2416')              // 深棕色，清晰可读
-      .attr('font-size', (d) => d.depth === 0 ? '13px' : '11px')
-      .attr('font-weight', (d) => d.depth === 0 ? '400' : '300')
+      .attr('fill', '#2C2416')
+      .attr('font-size', d => d.depth === 0 ? '13px' : '11px')
+      .attr('font-weight', d => d.depth === 0 ? '400' : '300')
       .attr('letter-spacing', '0.02em')
       .attr('opacity', 0)
-      .text((d) => {
+      .text(d => {
         const limit = d.depth === 0 ? 18 : 14
-        return d.label.length > limit ? d.label.slice(0, limit) + '…' : d.label
+        return d.label.length > limit ? d.label.slice(0, limit) + '...' : d.label
       })
-      .transition().delay(300).duration(400).attr('opacity', 1)
+      .transition().delay(400).duration(400).attr('opacity', 1)
 
-    // 更新已有节点位置
     nodeSel.transition().duration(400)
-      .attr('transform', (d) => `translate(${d.x ?? 0},${d.y ?? 0})`)
+      .attr('transform', d => `translate(${d.x ?? 0},${d.y ?? 0})`)
 
     nodeSel.select('.main')
-      .attr('fill', (d) => d.status === 'expanded' ? 'none' : getNodeColor(d.depth))
-      .attr('stroke-width', (d) => d.id === selectedNodeId ? 3 : 2)
-
-    nodeSel.select('.glow')
-      .attr('r', (d) => d.id === selectedNodeId
-        ? getNodeRadius(d.depth) * 4
-        : getNodeRadius(d.depth) * 2.5)
+      .attr('stroke-width', d => d.id === selectedNodeId ? 3 : d.depth === 0 ? 2.5 : 1.5)
 
     nodeSel.exit().remove()
   }, [root, selectedNodeId, computeLayout, onNodeClick])
