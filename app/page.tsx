@@ -7,6 +7,7 @@ import { TemplateCards } from '@/components/Landing/TemplateCards'
 import { SavedTreeList } from '@/components/Landing/SavedTreeList'
 import { InputBox } from '@/components/Landing/InputBox'
 import { BlurText } from '@/components/Landing/BlurText'
+import { HomeTour } from '@/components/Onboarding/HomeTour'
 
 export default function LandingPage() {
   const [inputValue, setInputValue] = useState('')
@@ -21,25 +22,27 @@ export default function LandingPage() {
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
         {/* Logo */}
-        <WhythLogo />
+        <div data-tour="logo"><WhythLogo /></div>
 
         {/* 标题 */}
-        <h1 className="text-center mb-1 mt-8">
-          <BlurText
-            text="你有答案"
-            className="text-4xl text-[#1A1208] leading-normal"
-            delay={100}
-            offsetY={-16}
-          />
-        </h1>
-        <h2 className="text-center mb-4">
-          <BlurText
-            text="但你找到问题了吗？"
-            className="text-2xl text-[#4A3728] leading-normal"
-            delay={80}
-            offsetY={12}
-          />
-        </h2>
+        <div data-tour="title">
+          <h1 className="text-center mb-1 mt-8">
+            <BlurText
+              text="你有答案"
+              className="text-4xl text-[#1A1208] leading-normal"
+              delay={100}
+              offsetY={-16}
+            />
+          </h1>
+          <h2 className="text-center mb-4">
+            <BlurText
+              text="但你找到问题了吗？"
+              className="text-2xl text-[#4A3728] leading-normal"
+              delay={80}
+              offsetY={12}
+            />
+          </h2>
+        </div>
 
         <motion.p
           className="text-sm text-center mb-10 font-normal tracking-wide"
@@ -51,13 +54,14 @@ export default function LandingPage() {
           输入你的感受、困惑或结论，让 Whyth 帮你逆向追问
         </motion.p>
 
-        <InputBox initialValue={inputValue} />
-        <TemplateCards onSelect={setInputValue} />
+        <div data-tour="input" className="w-full"><InputBox initialValue={inputValue} /></div>
+        <div data-tour="templates" className="w-full"><TemplateCards onSelect={setInputValue} /></div>
         <SavedTreeList />
       </motion.div>
 
       {/* 右下角帮助按钮 */}
       <motion.button
+        data-tour="help"
         className="fixed bottom-6 right-6 w-8 h-8 rounded-full border border-[#C4B89A] bg-[#EDE6D8] text-sm flex items-center justify-center transition-all"
         style={{ color: '#6B4F2C' }}
         title="新手引导"
