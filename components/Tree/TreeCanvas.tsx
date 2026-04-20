@@ -1,6 +1,6 @@
 // components/Tree/TreeCanvas.tsx
 'use client'
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useTreeStore } from '@/lib/tree-store'
 import { useTreeD3 } from './useTreeD3'
 import { TreeNode } from '@/types/tree'
@@ -15,7 +15,11 @@ function findParent(root: TreeNode, targetId: string): TreeNode | null {
   return null
 }
 
-export function TreeCanvas() {
+interface TreeCanvasProps {
+  onResetZoomReady?: (resetFn: () => void) => void
+}
+
+export function TreeCanvas({ onResetZoomReady }: TreeCanvasProps) {
   const { root, selectedNodeId, selectNode, expandNode, userInput, isLoading, setLoading } = useTreeStore()
 
   const handleNodeClick = useCallback(async (node: TreeNode) => {
@@ -59,11 +63,15 @@ export function TreeCanvas() {
     }
   }, [selectNode, expandNode, userInput, setLoading])
 
-  const { svgRef } = useTreeD3({
+  const { svgRef, resetZoom } = useTreeD3({
     root: root!,
     selectedNodeId,
     onNodeClick: handleNodeClick,
   })
+
+  useEffect(() => {
+    if (onResetZoomReady && resetZoom) onResetZoomReady(resetZoom)
+  }, [onResetZoomReady, resetZoom])
 
   if (!root) return null
 

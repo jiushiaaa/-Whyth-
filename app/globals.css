@@ -42,4 +42,35 @@ body {
   transform-box: fill-box;
 }
 
+@keyframes sway {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(2.5deg); }
+  75% { transform: rotate(-2.5deg); }
+}
+
+@keyframes soil-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.leaf-cluster {
+  animation: sway 3s ease-in-out infinite;
+  transform-origin: center bottom;
+  transform-box: fill-box;
+}
+
+.leaf-cluster:nth-child(2n) {
+  animation-delay: -1s;
+}
+
+.leaf-cluster:nth-child(3n) {
+  animation-delay: -2s;
+  animation-duration: 3.5s;
+}
+
+.soil-ring {
+  animation: soil-breathe 2s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
 

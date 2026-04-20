@@ -1,8 +1,8 @@
 // components/Tree/useTreeD3.ts
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useMemo } from 'react'
 import * as d3 from 'd3'
 import { TreeNode } from '@/types/tree'
-import { getNodeColor, getNodeGlow, getNodeRadius } from '@/lib/utils'
+import { getNodeColor, getNodeGlow, getNodeRadius, seededRandom, getBranchWidth, getBranchGradientColors, getLeafCount } from '@/lib/utils'
 
 interface UseTreeD3Options {
   root: TreeNode
@@ -26,6 +26,8 @@ function getLinks(node: TreeNode): { source: TreeNode; target: TreeNode }[] {
 
 export function useTreeD3({ root, selectedNodeId, onNodeClick }: UseTreeD3Options) {
   const svgRef = useRef<SVGSVGElement>(null)
+  const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null)
+  const svgSelRef = useRef<d3.Selection<SVGSVGElement, unknown, null, undefined> | null>(null)
   // 分两层：link 层在下，node 层在上
   const linkGRef = useRef<SVGGElement | null>(null)
   const nodeGRef = useRef<SVGGElement | null>(null)
@@ -216,6 +218,8 @@ export function useTreeD3({ root, selectedNodeId, onNodeClick }: UseTreeD3Option
         outerG.attr('transform', event.transform)
       })
 
+    zoomRef.current = zoom
+    svgSelRef.current = svgSel
     svgSel.call(zoom)
     render()
 
@@ -224,5 +228,11 @@ export function useTreeD3({ root, selectedNodeId, onNodeClick }: UseTreeD3Option
     return () => window.removeEventListener('resize', handleResize)
   }, [render])
 
-  return { svgRef }
+  const resetZoom = useCallback(() => {
+    if (zoomRef.current && svgSelRef.current) {
+      svgSelRef.current.transition().duration(500).call(zoomRef.current.transform, d3.zoomIdentity)
+    }
+  }, [])
+
+  return { svgRef, resetZoom }
 }
