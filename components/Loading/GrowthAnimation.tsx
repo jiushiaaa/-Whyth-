@@ -20,7 +20,7 @@ export function GrowthAnimation() {
   }, [])
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-end pb-32 overflow-hidden bg-[#F2EDE4]">
+    <div className="min-h-screen flex flex-col items-center justify-end pb-32 overflow-hidden">
       {/* 生长 SVG */}
       <svg
         width="160"

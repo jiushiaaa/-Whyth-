@@ -23,7 +23,7 @@ export default function TreePage() {
   }
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-[#F2EDE4]">
+    <div className="relative w-screen h-screen overflow-hidden">
       <TreeCanvas />
       <DetailDrawer />
       <SpotlightGuide />
