@@ -8,6 +8,9 @@ export async function POST(req: NextRequest) {
     if (!input || typeof input !== 'string' || input.trim().length === 0) {
       return NextResponse.json({ error: '请输入内容' }, { status: 400 })
     }
+    if (input.trim().length > 500) {
+      return NextResponse.json({ error: '输入内容不超过500字' }, { status: 400 })
+    }
 
     const result = await generateTree(input.trim())
     return NextResponse.json(result)
